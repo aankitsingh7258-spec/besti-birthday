@@ -521,6 +521,7 @@ updateMusicButton();
 
 // 🤗 Virtual Hug Surprise for Kajal ❤️
 document.addEventListener("DOMContentLoaded", function () {
+    console.log("Virtual Hug DOMContentLoaded handler started ❤️");
 const hugButton = document.getElementById("virtual-hug-btn");
 const hugOverlay = document.getElementById("hug-overlay");
 const closeHugButton = document.getElementById("close-hug-btn");
