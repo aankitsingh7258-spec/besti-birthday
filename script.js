@@ -531,6 +531,8 @@ document.addEventListener("DOMContentLoaded", function () {
         return;
     }
 
+    console.log("Virtual Hug elements found; attaching click listener ❤️");
+
     // Open Virtual Hug and record the interaction
     hugButton.addEventListener("click", async function () {
         console.log("Original Virtual Hug click handler started ❤️");
