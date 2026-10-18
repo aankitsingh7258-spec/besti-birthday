@@ -521,38 +521,89 @@ updateMusicButton();
 
 // 🤗 Virtual Hug Surprise for Kajal ❤️
 document.addEventListener("DOMContentLoaded", function () {
-    console.log("Virtual Hug DOMContentLoaded handler started ❤️");
-const hugButton = document.getElementById("virtual-hug-btn");
-const hugOverlay = document.getElementById("hug-overlay");
-const closeHugButton = document.getElementById("close-hug-btn");
+    const hugButton = document.getElementById("virtual-hug-btn");
+    const hugOverlay = document.getElementById("hug-overlay");
+    const closeHugButton = document.getElementById("close-hug-btn");
 
-if (!hugButton || !hugOverlay || !closeHugButton) {
-    return;
-}
-
-// Open the virtual hug
-hugButton.addEventListener("click", function () {
-    hugOverlay.classList.add("active");
-});
-
-// Close the virtual hug
-closeHugButton.addEventListener("click", function () {
-    hugOverlay.classList.remove("active");
-});
-
-// Close when clicking outside the card
-hugOverlay.addEventListener("click", function (event) {
-    if (event.target === hugOverlay) {
-        hugOverlay.classList.remove("active");
+    // Check whether all required elements exist
+    if (!hugButton || !hugOverlay || !closeHugButton) {
+        console.error("Virtual Hug elements missing. Check the HTML IDs.");
+        return;
     }
-});
 
-// Close with the Escape key
-document.addEventListener("keydown", function (event) {
-    if (event.key === "Escape") {
+    // Open Virtual Hug and record the interaction
+    hugButton.addEventListener("click", async function () {
+        console.log("Original Virtual Hug click handler started ❤️");
+        
+        hugOverlay.classList.add("active");
+
+        // Save a local record in this browser
+        const storageKey = "kajalHugEvents";
+        let events = [];
+
+        try {
+            events = JSON.parse(
+                localStorage.getItem(storageKey) || "[]"
+            );
+
+            if (!Array.isArray(events)) {
+                events = [];
+            }
+        } catch (error) {
+            events = [];
+        }
+
+        events.push({
+            event: "virtual_hug_opened",
+            time: new Date().toISOString()
+        });
+
+        try {
+            localStorage.setItem(
+                storageKey,
+                JSON.stringify(events)
+            );
+        } catch (error) {
+            console.error("Could not save local event:", error);
+        }
+
+        // Save the event to Firebase
+        try {
+            if (!window.db) {
+                throw new Error("Firebase database is not initialized.");
+            }
+
+            await window.db.collection("hugEvents").add({
+                event: "virtual_hug_opened",
+                time: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            console.log("Virtual Hug event saved to Firebase ❤️");
+        } catch (error) {
+            console.error(
+                "Could not save the Firebase event:",
+                error
+            );
+        }
+    });
+
+    // Close the Virtual Hug
+    closeHugButton.addEventListener("click", function () {
         hugOverlay.classList.remove("active");
-    }
+    });
+
+    // Close when clicking outside the card
+    hugOverlay.addEventListener("click", function (event) {
+        if (event.target === hugOverlay) {
+            hugOverlay.classList.remove("active");
+        }
+    });
+
+    // Close with the Escape key
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+            hugOverlay.classList.remove("active");
+        }
+    });
 });
 
-
-});
